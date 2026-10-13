@@ -13,7 +13,7 @@ import {
   updateTask,
   deleteTask,
 } from './services/taskService';
-import { CheckCircle2, AlertCircle, RefreshCw, X } from 'lucide-react';
+import { CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
 
 function App() {
   const [activeView, setActiveView] = useState('dashboard'); // 'dashboard' | 'manage-tasks' | 'calendar' | 'pomodoro' | 'api-docs'
@@ -118,6 +118,71 @@ function App() {
 
   const pendingCount = tasks.filter((t) => t.status === 'Pending').length;
 
+  // Render view cleanly without deep chained ternaries
+  const renderActiveView = () => {
+    if (isLoading && tasks.length === 0) {
+      return (
+        <div className="d-flex flex-column align-items-center justify-content-center p-5 text-secondary flex-grow-1">
+          <div className="spinner-border text-primary mb-3" role="status">
+            <span className="visually-hidden">Loading tasks...</span>
+          </div>
+          <p className="fw-medium">Loading coursework records...</p>
+        </div>
+      );
+    }
+
+    switch (activeView) {
+      case 'dashboard':
+        return (
+          <Dashboard
+            tasks={tasks}
+            onNavigateToTasks={() => setActiveView('manage-tasks')}
+            onNavigateToCalendar={() => setActiveView('calendar')}
+            onAddNewTask={() => setQuickAddOpen(true)}
+          />
+        );
+      case 'manage-tasks':
+        return (
+          <ManageTasks
+            tasks={tasks}
+            onCreateTask={handleCreateTask}
+            onUpdateTask={handleUpdateTask}
+            onDeleteTask={handleDeleteTask}
+            isSubmitting={isSubmitting}
+          />
+        );
+      case 'calendar':
+        return (
+          <CalendarView
+            tasks={tasks}
+            onCreateTask={handleCreateTask}
+            onUpdateTask={handleUpdateTask}
+            onDeleteTask={handleDeleteTask}
+            onNavigateToPomodoro={() => setActiveView('pomodoro')}
+            isSubmitting={isSubmitting}
+          />
+        );
+      case 'pomodoro':
+        return (
+          <PomodoroTimer
+            tasks={tasks}
+            onUpdateTask={handleUpdateTask}
+          />
+        );
+      case 'api-docs':
+        return <ApiDocs tasks={tasks} />;
+      default:
+        return (
+          <Dashboard
+            tasks={tasks}
+            onNavigateToTasks={() => setActiveView('manage-tasks')}
+            onNavigateToCalendar={() => setActiveView('calendar')}
+            onAddNewTask={() => setQuickAddOpen(true)}
+          />
+        );
+    }
+  };
+
   return (
     <div className="app-container">
       {/* Sidebar Navigation */}
@@ -144,7 +209,7 @@ function App() {
         {notification && (
           <div className="px-4 pt-3">
             <div
-              className={`alert alert-${notification.type} alert-dismissible fade show d-flex align-items-center justify-content-between mb-0 py-2.5 px-3 rounded-3 shadow-sm`}
+              className={`alert alert-${notification.type} alert-dismissible fade show d-flex align-items-center justify-content-between mb-0 py-2 px-3 rounded-3 shadow-sm`}
               role="alert"
             >
               <div className="d-flex align-items-center gap-2">
@@ -157,7 +222,7 @@ function App() {
               </div>
               <button
                 type="button"
-                className="btn-close p-2"
+                className={`btn-close p-2 ${theme === 'dark' ? 'btn-close-white' : ''}`}
                 onClick={() => setNotification(null)}
                 aria-label="Close"
               />
@@ -168,12 +233,13 @@ function App() {
         {/* Connection Error Banner */}
         {errorMessage && (
           <div className="px-4 pt-3">
-            <div className="alert alert-danger d-flex align-items-center justify-content-between rounded-3 py-2.5 px-3 mb-0">
+            <div className="alert alert-danger d-flex align-items-center justify-content-between rounded-3 py-2 px-3 mb-0">
               <div className="d-flex align-items-center gap-2">
                 <AlertCircle size={18} />
                 <span>{errorMessage}</span>
               </div>
               <button
+                type="button"
                 className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
                 onClick={loadTasks}
               >
@@ -183,46 +249,8 @@ function App() {
           </div>
         )}
 
-        {/* Main View rendering */}
-        {isLoading && tasks.length === 0 ? (
-          <div className="d-flex flex-column align-items-center justify-content-center p-5 text-secondary flex-grow-1">
-            <div className="spinner-border text-primary mb-3" role="status">
-              <span className="visually-hidden">Loading tasks...</span>
-            </div>
-            <p className="fw-medium">Loading coursework records...</p>
-          </div>
-        ) : activeView === 'dashboard' ? (
-          <Dashboard
-            tasks={tasks}
-            onNavigateToTasks={() => setActiveView('manage-tasks')}
-            onNavigateToCalendar={() => setActiveView('calendar')}
-            onAddNewTask={() => setQuickAddOpen(true)}
-          />
-        ) : activeView === 'manage-tasks' ? (
-          <ManageTasks
-            tasks={tasks}
-            onCreateTask={handleCreateTask}
-            onUpdateTask={handleUpdateTask}
-            onDeleteTask={handleDeleteTask}
-            isSubmitting={isSubmitting}
-          />
-        ) : activeView === 'calendar' ? (
-          <CalendarView
-            tasks={tasks}
-            onCreateTask={handleCreateTask}
-            onUpdateTask={handleUpdateTask}
-            onDeleteTask={handleDeleteTask}
-            onNavigateToPomodoro={() => setActiveView('pomodoro')}
-            isSubmitting={isSubmitting}
-          />
-        ) : activeView === 'pomodoro' ? (
-          <PomodoroTimer
-            tasks={tasks}
-            onUpdateTask={handleUpdateTask}
-          />
-        ) : (
-          <ApiDocs tasks={tasks} />
-        )}
+        {/* Render Main Content */}
+        {renderActiveView()}
       </div>
 
       {/* Quick Add Modal from Dashboard */}

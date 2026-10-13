@@ -48,8 +48,10 @@ const Navbar = ({ activeView, onToggleSidebar, isConnected, theme, onToggleTheme
 
   return (
     <header className="app-header">
+      {/* Title & Mobile Toggle */}
       <div className="d-flex align-items-center gap-3">
         <button
+          type="button"
           className="btn btn-outline-secondary d-lg-none btn-action"
           onClick={onToggleSidebar}
           aria-label="Toggle navigation menu"
@@ -58,25 +60,33 @@ const Navbar = ({ activeView, onToggleSidebar, isConnected, theme, onToggleTheme
         </button>
         <div>
           <h5 className="mb-0 fw-bold">{headerInfo.title}</h5>
-          <span className="text-muted small">{headerInfo.subtitle}</span>
+          <span className={`small ${theme === 'dark' ? 'text-light-emphasis' : 'text-secondary'}`}>
+            {headerInfo.subtitle}
+          </span>
         </div>
       </div>
 
-      <div className="d-flex align-items-center gap-2.5">
-        {/* Date display */}
-        <div className="d-none d-md-flex align-items-center gap-2 text-secondary bg-light px-3 py-1 rounded-pill border small">
+      {/* Right-side Utilities */}
+      <div className="d-flex align-items-center gap-3">
+        {/* Date Display */}
+        <div className={`d-none d-md-flex align-items-center gap-2 px-3 py-1.5 rounded-pill border small ${
+          theme === 'dark' ? 'bg-dark text-light border-secondary' : 'bg-light text-secondary'
+        }`}>
           <Calendar size={14} className="text-primary" />
           <span>{currentDate}</span>
         </div>
 
-        {/* Dark / Light Mode Toggle Button */}
+        {/* Theme Toggle Button */}
         {onToggleTheme && (
           <button
-            className="btn btn-outline-secondary btn-action rounded-circle"
+            type="button"
+            className={`btn btn-action rounded-circle d-flex align-items-center justify-content-center ${
+              theme === 'dark' ? 'btn-outline-light' : 'btn-outline-secondary'
+            }`}
             onClick={onToggleTheme}
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             aria-label="Toggle theme mode"
-            style={{ width: '36px', height: '36px' }}
+            style={{ width: '38px', height: '38px', flexShrink: 0 }}
           >
             {theme === 'dark' ? (
               <Sun size={17} className="text-warning" />
@@ -86,16 +96,16 @@ const Navbar = ({ activeView, onToggleSidebar, isConnected, theme, onToggleTheme
           </button>
         )}
 
-        {/* Backend status indicator */}
+        {/* API Connection Status */}
         <div
-          className={`badge rounded-pill d-inline-flex align-items-center gap-1 px-2.5 py-1.5 ${
+          className={`badge rounded-pill d-inline-flex align-items-center gap-1.5 px-3 py-2 ${
             isConnected
               ? 'bg-success-subtle text-success border border-success-subtle'
               : 'bg-danger-subtle text-danger border border-danger-subtle'
           }`}
           title={isConnected ? 'Backend API is connected' : 'Backend API connection failed'}
         >
-          {isConnected ? <CheckCircle2 size={13} /> : <AlertCircle size={13} />}
+          {isConnected ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
           <span className="small fw-semibold d-none d-sm-inline">
             {isConnected ? 'API Connected' : 'Server Offline'}
           </span>

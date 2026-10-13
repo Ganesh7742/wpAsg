@@ -10,11 +10,28 @@ import {
   Calendar,
 } from 'lucide-react';
 
-const Sidebar = ({ activeView, setActiveView, isOpen, onClose, totalTasks, pendingTasks }) => {
+const Sidebar = ({
+  activeView,
+  setActiveView,
+  isOpen,
+  onClose,
+  totalTasks = 0,
+  pendingTasks = 0,
+}) => {
+  const handleNavClick = (view) => {
+    setActiveView(view);
+    if (onClose) onClose();
+  };
+
   return (
     <>
       {/* Mobile backdrop */}
-      {isOpen && <div className="sidebar-backdrop d-lg-none" onClick={onClose} />}
+      {isOpen && (
+        <div
+          className="sidebar-backdrop d-lg-none"
+          onClick={onClose}
+        />
+      )}
 
       <aside className={`app-sidebar ${isOpen ? 'show' : ''}`}>
         {/* Brand header */}
@@ -27,7 +44,8 @@ const Sidebar = ({ activeView, setActiveView, isOpen, onClose, totalTasks, pendi
             <div className="brand-subtitle">Workload Manager</div>
           </div>
           <button
-            className="btn btn-sm btn-light d-lg-none p-1 text-secondary"
+            type="button"
+            className="btn btn-sm btn-outline-secondary d-lg-none p-1"
             onClick={onClose}
             aria-label="Close menu"
           >
@@ -37,27 +55,30 @@ const Sidebar = ({ activeView, setActiveView, isOpen, onClose, totalTasks, pendi
 
         {/* Navigation list */}
         <nav className="sidebar-nav">
-          <div className="text-muted small px-3 mb-2 text-uppercase fw-bold" style={{ fontSize: '0.7rem' }}>
+          <div
+            className="text-muted small px-3 mb-2 text-uppercase fw-bold"
+            style={{ fontSize: '0.7rem' }}
+          >
             Navigation
           </div>
 
           <button
-            className={`nav-link-custom text-start w-100 ${activeView === 'dashboard' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveView('dashboard');
-              if (onClose) onClose();
-            }}
+            type="button"
+            className={`nav-link-custom text-start w-100 ${
+              activeView === 'dashboard' ? 'active' : ''
+            }`}
+            onClick={() => handleNavClick('dashboard')}
           >
             <LayoutDashboard size={18} />
             <span className="flex-grow-1">Dashboard</span>
           </button>
 
           <button
-            className={`nav-link-custom text-start w-100 ${activeView === 'manage-tasks' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveView('manage-tasks');
-              if (onClose) onClose();
-            }}
+            type="button"
+            className={`nav-link-custom text-start w-100 ${
+              activeView === 'manage-tasks' ? 'active' : ''
+            }`}
+            onClick={() => handleNavClick('manage-tasks')}
           >
             <CheckSquare size={18} />
             <span className="flex-grow-1">Manage Tasks</span>
@@ -69,55 +90,67 @@ const Sidebar = ({ activeView, setActiveView, isOpen, onClose, totalTasks, pendi
           </button>
 
           <button
-            className={`nav-link-custom text-start w-100 ${activeView === 'calendar' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveView('calendar');
-              if (onClose) onClose();
-            }}
+            type="button"
+            className={`nav-link-custom text-start w-100 ${
+              activeView === 'calendar' ? 'active' : ''
+            }`}
+            onClick={() => handleNavClick('calendar')}
           >
             <Calendar size={18} />
             <span className="flex-grow-1">Calendar</span>
-            <span className="badge bg-primary-subtle text-primary rounded-pill px-2 py-0.5" style={{ fontSize: '0.68rem' }}>
+            <span
+              className="badge bg-primary-subtle text-primary rounded-pill px-2 py-0.5"
+              style={{ fontSize: '0.68rem' }}
+            >
               Schedule
             </span>
           </button>
 
           <button
-            className={`nav-link-custom text-start w-100 ${activeView === 'pomodoro' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveView('pomodoro');
-              if (onClose) onClose();
-            }}
+            type="button"
+            className={`nav-link-custom text-start w-100 ${
+              activeView === 'pomodoro' ? 'active' : ''
+            }`}
+            onClick={() => handleNavClick('pomodoro')}
           >
             <Timer size={18} />
             <span className="flex-grow-1">Study Timer</span>
-            <span className="badge bg-indigo-subtle text-primary rounded-pill px-2 py-0.5" style={{ fontSize: '0.68rem', background: '#eef2ff' }}>
+            <span
+              className="badge bg-primary-subtle text-primary rounded-pill px-2 py-0.5"
+              style={{ fontSize: '0.68rem' }}
+            >
               Focus
             </span>
           </button>
 
           <button
-            className={`nav-link-custom text-start w-100 ${activeView === 'api-docs' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveView('api-docs');
-              if (onClose) onClose();
-            }}
+            type="button"
+            className={`nav-link-custom text-start w-100 ${
+              activeView === 'api-docs' ? 'active' : ''
+            }`}
+            onClick={() => handleNavClick('api-docs')}
           >
             <Terminal size={18} />
             <span className="flex-grow-1">API Documentation</span>
-            <span className="badge bg-primary-subtle text-primary rounded-pill px-2 py-0.5" style={{ fontSize: '0.68rem' }}>
+            <span
+              className="badge bg-primary-subtle text-primary rounded-pill px-2 py-0.5"
+              style={{ fontSize: '0.68rem' }}
+            >
               REST
             </span>
           </button>
         </nav>
 
-        {/* Sidebar Footer Info */}
+        {/* Sidebar Footer */}
         <div className="sidebar-footer">
           <div className="d-flex align-items-center gap-2 mb-2">
             <Layers size={16} className="text-primary" />
-            <span className="small fw-semibold text-secondary">Academic Session</span>
+            <span className="small fw-semibold text-secondary">
+              Academic Session
+            </span>
           </div>
-          <div className="p-2.5 bg-white rounded border small">
+
+          <div className="p-2 bg-body-tertiary rounded border small">
             <div className="d-flex justify-content-between mb-1">
               <span className="text-muted">Total Enrolled:</span>
               <span className="fw-bold">{totalTasks} tasks</span>
@@ -127,6 +160,7 @@ const Sidebar = ({ activeView, setActiveView, isOpen, onClose, totalTasks, pendi
               <span className="fw-bold text-warning">{pendingTasks} pending</span>
             </div>
           </div>
+
           <div className="text-center mt-2">
             <span className="text-muted" style={{ fontSize: '0.7rem' }}>
               Web Programming Assignment
