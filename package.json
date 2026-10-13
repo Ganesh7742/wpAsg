@@ -1,0 +1,16 @@
+{
+  "name": "student-workload-management",
+  "version": "1.0.0",
+  "description": "Student Workload Management System - Academic Full-Stack Web Application (React, Node.js, Express, MongoDB)",
+  "scripts": {
+    "server": "npm run dev --prefix backend",
+    "client": "npm run dev --prefix frontend",
+    "seed": "npm run seed --prefix backend",
+    "build": "npm run build --prefix frontend",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.5"
+  }
+}
