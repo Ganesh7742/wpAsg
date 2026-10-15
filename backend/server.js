@@ -3,6 +3,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const taskRoutes = require('./routes/taskRoutes');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 
 // Load environment variables
 dotenv.config();
@@ -28,6 +30,17 @@ app.get('/api/health', (req, res) => {
 
 // API Routes
 app.use('/api/tasks', taskRoutes);
+
+// Swagger API docs (http://localhost:5000/api-docs)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customSiteTitle: 'StudyPulse API Docs',
+}));
+
+// Raw OpenAPI JSON (useful for imports / frontend codegen)
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 // 404 handler for unknown routes
 app.use((req, res, next) => {
